@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>国控湖南物流系统 ● 一址通</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --text:#e9efff;
+    --text-dim:#8fa0c0;
+    --panel:rgba(255,255,255,.045);
+    --panel-brd:rgba(255,255,255,.09);
+  }
+  html,body{height:100%}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+    color:var(--text);
+    background:#070c17;
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* 背景光晕 */
+  body::before,body::after{
+    content:"";position:fixed;border-radius:50%;filter:blur(130px);
+    pointer-events:none;z-index:0;
+  }
+  body::before{width:760px;height:760px;background:#1d4ed8;opacity:.42;top:-340px;left:-220px}
+  body::after{width:660px;height:660px;background:#0e7490;opacity:.38;bottom:-320px;right:-200px}
+
+  .wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:52px 24px 40px}
+
+  /* ---------- 头部 ---------- */
+  .hero{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:24px;flex-wrap:wrap;margin-bottom:38px;
+  }
+  .brand{display:flex;align-items:center;gap:16px}
+  .logo{
+    width:58px;height:58px;border-radius:17px;display:grid;place-items:center;
+    background:linear-gradient(135deg,#3b82f6,#22d3ee);
+    box-shadow:0 14px 30px -12px rgba(59,130,246,1);
+    flex:0 0 auto;
+  }
+  .logo svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .hero h1{
+    font-size:27px;font-weight:700;letter-spacing:1.5px;
+    background:linear-gradient(90deg,#ffffff 10%,#a9c9ff 90%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero .sub{font-size:12.5px;color:var(--text-dim);margin-top:6px;letter-spacing:3px}
+  .clock{
+    font-size:13px;color:var(--text-dim);font-variant-numeric:tabular-nums;
+    letter-spacing:.5px;padding:9px 16px;border-radius:11px;
+    border:1px solid var(--panel-brd);background:rgba(255,255,255,.03);
+    white-space:nowrap;
+  }
+
+  /* ---------- 搜索 ---------- */
+  .search{
+    position:relative;display:flex;align-items:center;
+    height:54px;padding:0 18px;margin-bottom:34px;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:15px;
+    backdrop-filter:blur(10px);
+    transition:border-color .25s,box-shadow .25s,background .25s;
+  }
+  .search:focus-within{
+    border-color:rgba(96,165,250,.7);
+    box-shadow:0 0 0 4px rgba(59,130,246,.15);
+    background:rgba(255,255,255,.075);
+  }
+  .search svg{width:19px;height:19px;flex:0 0 auto;opacity:.55;stroke:#cfe0ff;fill:none;stroke-width:2;stroke-linecap:round}
+  .search input{
+    flex:1;height:100%;background:none;border:0;outline:0;
+    color:var(--text);font-size:15px;padding:0 14px;font-family:inherit;
+  }
+  .search input::placeholder{color:#7d8cab;letter-spacing:.5px}
+  .search kbd{
+    font-family:inherit;font-size:12px;color:#93a4c4;
+    border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);
+    border-radius:7px;padding:2px 8px;
+  }
+
+  /* ---------- 分组面板 ---------- */
+  .group{
+    background:rgba(255,255,255,.028);
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:20px;
+    padding:24px 24px 26px;
+    margin-bottom:26px;
+    backdrop-filter:blur(10px);
+    animation:rise .55s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .group:nth-of-type(2){animation-delay:.09s}
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+  .group-head{display:flex;align-items:center;gap:11px;margin-bottom:20px}
+  .g-bar{
+    width:4px;height:18px;border-radius:3px;
+    background:linear-gradient(180deg,#60a5fa,#22d3ee);
+    box-shadow:0 0 12px rgba(96,165,250,.8);
+  }
+  .group-head h2{font-size:17px;font-weight:600;letter-spacing:1px}
+  .g-count{
+    font-size:12px;color:var(--text-dim);line-height:1;
+    padding:4px 9px;border-radius:20px;
+    border:1px solid var(--panel-brd);background:rgba(255,255,255,.03);
+  }
+
+  /* ---------- 链接网格 ---------- */
+  .grid{
+    list-style:none;
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(248px,1fr));
+    gap:14px;
+  }
+  .item{
+    position:relative;overflow:hidden;
+    display:flex;align-items:center;gap:14px;
+    padding:15px 17px;border-radius:14px;
+    background:var(--panel);
+    border:1px solid var(--panel-brd);
+    text-decoration:none;color:inherit;
+    transition:transform .26s cubic-bezier(.2,.7,.3,1),
+               border-color .26s,background .26s,box-shadow .26s;
+  }
+  .item::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.09) 50%,transparent 70%);
+    transform:translateX(-130%);
+    transition:transform .7s ease;
+  }
+  .item:hover::after{transform:translateX(130%)}
+  .item:hover{
+    transform:translateY(-4px);
+    background:rgba(255,255,255,.085);
+    border-color:rgba(96,165,250,.55);
+    box-shadow:0 16px 32px -14px rgba(37,99,235,.75);
+  }
+
+  .ico{
+    flex:0 0 auto;width:42px;height:42px;border-radius:12px;
+    display:grid;place-items:center;
+    font-size:13px;font-weight:700;letter-spacing:.4px;color:#fff;
+    background:linear-gradient(135deg,#4f8cf7,#2563eb);
+    box-shadow:0 8px 18px -8px rgba(59,130,246,.95);
+  }
+  /* 图标配色循环 */
+  .grid li:nth-child(6n+2) .ico{background:linear-gradient(135deg,#22d3ee,#0e9488);box-shadow:0 8px 18px -8px rgba(34,211,238,.95)}
+  .grid li:nth-child(6n+3) .ico{background:linear-gradient(135deg,#a78bfa,#7c3aed);box-shadow:0 8px 18px -8px rgba(139,92,246,.95)}
+  .grid li:nth-child(6n+4) .ico{background:linear-gradient(135deg,#fbbf24,#f97316);box-shadow:0 8px 18px -8px rgba(251,146,60,.9)}
+  .grid li:nth-child(6n+5) .ico{background:linear-gradient(135deg,#f472b6,#db2777);box-shadow:0 8px 18px -8px rgba(236,72,153,.9)}
+  .grid li:nth-child(6n)   .ico{background:linear-gradient(135deg,#34d399,#059669);box-shadow:0 8px 18px -8px rgba(16,185,129,.9)}
+
+  .name{font-size:15px;font-weight:500;letter-spacing:.4px;line-height:1.3}
+  .arrow{
+    margin-left:auto;font-size:15px;color:#7d8cab;
+    opacity:0;transform:translate(-4px,4px);
+    transition:opacity .25s,transform .25s,color .25s;
+  }
+  .item:hover .arrow{opacity:1;transform:translate(0,0);color:#8ec5ff}
+
+  /* 空状态 */
+  .empty{
+    display:none;text-align:center;color:var(--text-dim);
+    font-size:14px;padding:56px 0;letter-spacing:1px;
+  }
+
+  /* 页脚 */
+  .foot{
+    text-align:center;font-size:12.5px;color:#5f6f8d;
+    letter-spacing:1.5px;padding:26px 0 8px;
+  }
+
+  @media (max-width:640px){
+    .wrap{padding:34px 16px 28px}
+    .hero h1{font-size:22px}
+    .hero .sub{letter-spacing:1.5px}
+    .logo{width:50px;height:50px;border-radius:15px}
+    .search kbd{display:none}
+    .group{padding:20px 16px 22px;border-radius:17px}
+    .grid{grid-template-columns:1fr}
+    .clock{font-size:12px;padding:7px 12px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 头部 -->
+  <header class="hero">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 24 24"><path d="M4 21V5l8-2v18M12 21h8V9l-8-3"/><path d="M7 9h2M7 13h2M7 17h2M16 13h1M16 17h1"/></svg>
+      </div>
+      <div>
+        <h1>国控湖南物流系统 ● 一址通</h1>
+        <p class="sub">统一入口 · 一址直达</p>
+      </div>
+    </div>
+    <div class="clock" id="clock">--</div>
+  </header>
+
+  <!-- 搜索 -->
+  <div class="search">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+    <input id="q" type="text" placeholder="搜索应用名称，如 OMS、OA、TMS …" autocomplete="off">
+    <kbd>/</kbd>
+  </div>
+
+  <!-- 物流系统 -->
+  <section class="group" data-group>
+    <div class="group-head">
+      <span class="g-bar"></span>
+      <h2>物流系统</h2>
+      <span class="g-count">6</span>
+    </div>
+    <ul class="grid">
+      <li>
+        <a class="item" href="http://wmos2019-huncs-app1.prod.sinopharm.com:14000/manh/index.html?i=42" target="_blank" rel="nofollow noopener">
+          <span class="ico">WMS1</span><span class="name">WMS19正式APP1</span><span class="arrow">↗</span>
+        </a>
+      </li>
+      <li>
+        <a class="item" href="http://wmos2019-huncs-app2.prod.sinopharm.com:14000/manh/index.html?i=42" target="_blank" rel="nofollow noopener">
+          <span class="ico">WMS2</span><span class="name">WMS19正式APP2</span><span class="arrow">↗</span>
+        </a>
+      </li>
+      <li>
+        <a class="item" href="https://oms.sinopharmlogistics.com/oms-vue-page/index.html#/home" target="_blank" rel="nofollow noopener">
+          <span class="ico">OMS</span><span class="name">湖南正式OMS</span><span class="arrow">↗</span>
+        </a>
+      </li>
+      <li>
+        <a class="item" href="https://tms.sinopharmlogistics.com/tms/home" target="_blank" rel="nofollow noopener">
+          <span class="ico">TMS</span><span class="name">湖南正式TMS</span><span class="arrow">↗</span>
+        </a>
+      </li>
+      <li>
+        <a class="item" href="http://iotapp.local.sinopharmlogistics.com" target="_blank" rel="nofollow noopener">
+          <span class="ico">IoT</span><span class="name">湖南正式IoT</span><span class="arrow">↗</span>
+        </a>
+      </li>
+      <li>
+        <a class="item" href="http://ct-portal.local.sinopharmlogistics.com/ct/page/home" target="_blank" rel="nofollow noopener">
+          <span class="ico">控制塔</span><span class="name">物流信息控制塔</span><span class="arrow">↗</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <!-- 日常办公 -->
+  <section class="group" data-group>
+    <div class="group-head">
+      <span class="g-bar"></span>
+      <h2>日常办公</h2>
+      <span class="g-count">5</span>
+    </div>
+    <ul class="grid">
+      <li>
+        <a class="item" href="https://oa.gykghn.com" target="_blank" rel="nofollow noopener">
+          <span class="ico">致远</span><span class="name">致远OA</span><span class="arrow">↗</span>
+        </a>
+      </li>
+      <li>
+        <a class="item" href="https://oacloud.sinopharmholding.com/" target="_blank" rel="nofollow noopener">
+          <span class="ico">国控</span><span class="name">总部OA</span><span class="arrow">↗</span>
+        </a>
+      </li>
+      <li>
+        <a class="item" href="https://iam.sinopharmholding.com/idp/authcenter/ActionAuthChain?entityId=gkoa&authnLcKey=86f2fd45-3cff-4bdb-9fec-4696c1067a13" target="_blank" rel="nofollow noopener">
+          <span class="ico">信创</span><span class="name">信创OA</span><span class="arrow">↗</span>
+        </a>
+      </li>
+      <li>
+        <a class="item" href="https://expense.sinopharmholding.com/ecs/index" target="_blank" rel="nofollow noopener">
+          <span class="ico">费</span><span class="name">费用管理系统</span><span class="arrow">↗</span>
+        </a>
+      </li>
+      <li>
+        <a class="item" href="https://spu.21tb.com/" target="_blank" rel="nofollow noopener">
+          <span class="ico">学</span><span class="name">国药云学</span><span class="arrow">↗</span>
+        </a>
+      </li>
+      <li>
+        <a class="item" href="http://hr.sinopharmgroup.com.cn/SinopharmOrg/WeChartManagement/LgoinByCode.aspx" target="_blank" rel="nofollow noopener">
+          <span class="ico">绩</span><span class="name">绩效考核</span><span class="arrow">↗</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <div class="empty" id="empty">未找到匹配的应用，换个关键词试试 ~</div>
+
+  <footer class="foot">企业内部系统导航 · 请勿外传</footer>
+</div>
+
+<script>
+  /* 实时时钟 */
+  (function(){
+    var el = document.getElementById('clock');
+    var week = ['日','一','二','三','四','五','六'];
+    function pad(n){ return n < 10 ? '0' + n : '' + n; }
+    function tick(){
+      var d = new Date();
+      el.textContent = d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日  星期' +
+        week[d.getDay()] + '  ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+
+  /* 搜索过滤 */
+  (function(){
+    var input = document.getElementById('q');
+    var empty = document.getElementById('empty');
+    var groups = document.querySelectorAll('[data-group]');
+
+    function filter(){
+      var kw = input.value.trim().toLowerCase();
+      var total = 0;
+
+      groups.forEach(function(g){
+        var count = 0;
+        g.querySelectorAll('li').forEach(function(li){
+          var hit = !kw || li.textContent.toLowerCase().indexOf(kw) > -1;
+          li.style.display = hit ? '' : 'none';
+          if (hit) count++;
+        });
+        g.style.display = count ? '' : 'none';
+        var badge = g.querySelector('.g-count');
+        if (badge) badge.textContent = count;
+        total += count;
+      });
+
+      empty.style.display = total ? 'none' : 'block';
+    }
+
+    input.addEventListener('input', filter);
+
+    document.addEventListener('keydown', function(e){
+      if (e.key === '/' && document.activeElement !== input){
+        e.preventDefault();
+        input.focus();
+      }
+      if (e.key === 'Escape'){
+        input.value = '';
+        filter();
+        input.blur();
+      }
+    });
+  })();
+</script>
+</body>
+</html>
